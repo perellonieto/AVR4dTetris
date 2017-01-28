@@ -1,5 +1,10 @@
 /*************************************************
 
+        4Display Shield Tetris
+        Code: Miquel Perello Nieto
+        
+        Adaptation of the code:
+        
         4Display Shield Library Example
         Code: Oscar Gonzalez December 2010
         www.BricoGeek.com
@@ -20,7 +25,7 @@
 	THE SOFTWARE.
 
  *************************************************/
-#include "displayshield4d.h"
+#include "displayshield4d.h" 
  
 DisplayShield4d  oled;
 
@@ -33,11 +38,7 @@ const int PushButton = 5;     // the number of the pushbutton pin
 const int CONTRAST = 2;    // 0 - 15
 const unsigned int dark = 0x7BEF; // binary R = 01111 G = 011111 B = 01111
 
-int led = 13; // led in the board
-
 const int pixel = 6;
-
-char author[] = "Miquel Perello Nieto";
 
 struct position {
   int v;
@@ -101,20 +102,7 @@ ISR(TIMER1_OVF_vect)
   //TCNT1=0x0BDC;
   TCNT1=0xFBDC;
   second++;
-  digitalWrite(led, second%2);
 };
-
-boolean toggle0 = 0;
-ISR(TIMER0_COMPA_vect){//timer0 interrupt 2kHz toggles pin 8
-//generates pulse wave of frequency 2kHz/2 = 1kHz (takes two cycles for full wave- toggle high then toggle low)
-  if (toggle0){
-    toggle0 = 0;
-  }
-  else{
-    toggle0 = 1;
-  }
-  oled.rectangle(30, 30, 100, 30, OLED_SOLID, oled.RGB(100, 200*toggle0, 100));
-}
 
 void(* reset) (void) = 0;
 
@@ -210,39 +198,27 @@ void show_menu()
   
   /* Barrido de pantalla inicial */
   for (i=0 ; i<128 ; i++) { oled.line(0, i, 159, i, oled.RGB(255-i*2, 0, 127+i)); }
+  //delay(100);
   for (i=0 ; i<128 ; i++) { oled.line(0, 127-i, 159, 127-i, oled.RGB(i*2, 255-i*2, 127+i)); }
   //delay(100);
   for (i=0 ; i<160 ; i++) { oled.line(159-i, 0, 159-i, 127, oled.RGB(255-i, i, 0)); }
   //delay(100);
   for (i=0 ; i<160 ; i++) { oled.line(i, 0, i, 127, oled.RGB(0, 255-i, 255-i)); }
   //delay(100);
-  for (i=0 ; i<255 ; i++) { oled.circle(80, 64, i/3, OLED_SOLID, oled.RGB(i, i, i)); }
-  for (i=0 ; i<255 ; i++) { oled.circle(80, 64, (255-i)/2, OLED_SOLID, oled.RGB(i, i, 0)); }
-  //oled.Clear();
-  
-  for (i=0 ; i<128 ; i++) { oled.line(0, i, 159, i, oled.RGB(255-i*2, 0, 127+i)); }
+  //for (i=0 ; i<255 ; i++) { oled.circle(80, 64, i/3, OLED_WIREFRAME, oled.RGB(i, i, i)); }
+  //for (i=0 ; i<255 ; i++) { oled.circle(80, 64, (255-i)/2, OLED_SOLID, oled.RGB(i, i, 0)); }
   oled.Clear();
-  oled.rectangle(30, 30, 100, 30, OLED_SOLID, oled.RGB(100, 200, 100));
-  delay(1000);
-
   
-  //oled.drawstringblock(5, 5, 0, oled.RGB(0,0,0), 10, 10, author);
-  //delay(1000);
-  //oled.drawstringblock(5, 40, 0, oled.RGB(0, 255, 0), 1, 3, author);
-  //delay(1000);
-
-
-  //oled.drawstringblock(5, 5, 0, oled.RGB(255, 255, 255), 2, 2, "Arduino 2560");
-  //oled.drawstringblock(5, 40, 0, oled.RGB(0, 255, 0), 1, 3, "Miquel Perello Nieto");
-  //oled.drawstringblock(5, 100, 0, oled.RGB(255, 0, 255), 1, 1, "www.mk137.dyndns.org");
-  delay(1000); 
+  oled.drawstringblock(5, 5, 0, oled.RGB(255, 255, 255), 2, 2, "Arduino 2560");
+  oled.drawstringblock(5, 40, 0, oled.RGB(0, 255, 0), 1, 3, "Miquel Perello Nieto");
+  oled.drawstringblock(5, 100, 0, oled.RGB(255, 0, 255), 1, 1, "www.perellonieto.com");
+  delay(2000); 
   oled.Clear(); 
   
   
-  oled.rectangle(30, 30, 100, 30, OLED_SOLID, oled.RGB(100, 200, 100));
-  delay(2000);
-  //oled.drawstringblock(35, 25, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "TETRIS");
-  //foled.drawstringblock(60, 105, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "Start");
+  oled.rectangle(30, (3*45)+5, 100, 30, OLED_SOLID, oled.RGB(100, 255, 100));
+  oled.drawstringblock(35, 25, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "TETRIS");
+  oled.drawstringblock(60, 105, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "Start");
   
   while (digitalRead(PushButton) == HIGH)
   {
@@ -390,13 +366,10 @@ void setup()
   pinMode(PushButton, INPUT);
   digitalWrite(PushButton, HIGH);
   
-    
   TIMSK1=0x01;    // enabled global and timer overflow interrupt;
   TCCR1A = 0x00;  // normal operation page 148 (mode0);
   TCNT1=0x0BDC;   // 16bit counter register
   TCCR1B = 0x04;  // start timer/ set clock
-  
-  // End of test timer0
   
   show_menu();
   
@@ -470,7 +443,25 @@ void game_over()
        for (i = 0; i < 20; i++)
        {
         for (j = 0; j < 10; j++)
-        {
+        {//	Serial.write(OLED_STRING_BLOCK);
+//
+//	Serial.write(x);
+//	Serial.write(y);
+//	Serial.write(font);
+//
+//	// Color
+//	Serial.write(color >> 8);		// MSB			
+//	Serial.write(color & 0xFF);		// LSB
+//
+//	Serial.write(width);
+//	Serial.write(height);
+//
+//	for (int i=0 ; i<strlen(text) ; i++)
+//	{
+//		Serial.write(text[i]);
+//	}
+//
+//	Serial.write(OLED_STRINGTERMINATOR, 1); // String terminator
           board[i][j] = -1;
         }
        }
