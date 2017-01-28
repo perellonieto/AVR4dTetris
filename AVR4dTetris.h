@@ -21,8 +21,6 @@ struct position {
 int board[20][10];
 char puntos[4];
 char debug[12];
-int i;
-int j;
 int aux;
 int fig;
 int rot;

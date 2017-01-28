@@ -95,7 +95,7 @@ int paint_figure(int v, int h, int figure, int rot, unsigned int color){
   h = ini.h+(h*pixel);
   v = ini.v+(v*pixel);
   
-  for (i = 0; i < 4; i++){
+  for (int i = 0; i < 4; i++){
      oled.rectangle(h+scheme[figure][rot][i].h*pixel, v+scheme[figure][rot][i].v*pixel, pixel-1, pixel-1, OLED_SOLID, color & dark);
      oled.rectangle(h+scheme[figure][rot][i].h*pixel+1, v+scheme[figure][rot][i].v*pixel+1, pixel-3, pixel-3, OLED_SOLID, color);
   }
@@ -106,19 +106,19 @@ int erase_figure(int v, int h, int figure, int rot){
   v = ini.v+v*pixel;
   unsigned int color_erase = oled.RGB(0,0,0);
   
-  for (i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
      oled.rectangle(h+scheme[figure][rot][i].h*pixel, v+scheme[figure][rot][i].v*pixel, pixel-1, pixel-1, OLED_SOLID, color_erase);
 }
 
 int show_intro(){
-   oled.setfont(OLED_FONT5x7);
+  oled.setfont(OLED_FONT5x7);
   oled.setfontmode(OLED_FONT_TRANSPARENT);
   
   /* Barrido de pantalla inicial */
-  for (i=0 ; i<128 ; i++) { oled.line(0, i, 159, i, oled.RGB(255-i*2, 0, 127+i)); }
-  for (i=0 ; i<128 ; i++) { oled.line(0, 127-i, 159, 127-i, oled.RGB(i*2, 255-i*2, 127+i)); }
-  for (i=0 ; i<160 ; i++) { oled.line(159-i, 0, 159-i, 127, oled.RGB(255-i, i, 0)); }
-  for (i=0 ; i<160 ; i++) { oled.line(i, 0, i, 127, oled.RGB(0, 255-i, 255-i)); }
+  for (int i=0 ; i<128 ; i++) { oled.line(0, i, 159, i, oled.RGB(255-i*2, 0, 127+i)); }
+  for (int i=0 ; i<128 ; i++) { oled.line(0, 127-i, 159, 127-i, oled.RGB(i*2, 255-i*2, 127+i)); }
+  for (int i=0 ; i<160 ; i++) { oled.line(159-i, 0, 159-i, 127, oled.RGB(255-i, i, 0)); }
+  for (int i=0 ; i<160 ; i++) { oled.line(i, 0, i, 127, oled.RGB(0, 255-i, 255-i)); }
   oled.Clear();
   
   oled.drawstringblock(5, 5, 0, oled.RGB(255, 255, 255), 2, 2, "Arduino 2560");
@@ -155,8 +155,8 @@ int show_game(){
   
   change_color();
   
-   for (i = 0; i < 20; i++)
-    for (j = 0; j < 10; j++)
+   for (int i = 0; i < 20; i++)
+    for (int j = 0; j < 10; j++)
       board[i][j] = -1;
    
   oled.SetBackground(oled.RGB(200, 100, 100));
@@ -171,25 +171,22 @@ int limit(int v, int h, int fig, int rot){
   if (v > 20-tam_fig_v(fig,rot))
     return 1;
   
-  for (i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
     if (board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] != -1) return 1;
   
   return 0;
 }
 
 void write_board_figure(int v, int h, int fig, int rot, unsigned int color){  
-  for (i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
     board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] = color;
 }
 
 void erase_board_line(int v){
-  int i;
-  int j;
-  
   oled.rectangle(ini.h, ini.v+v*pixel, pixel*10-1, pixel-1, OLED_SOLID, oled.RGB(0,0,0));
   
-  for (i = v; i > 1; i--){
-    for (j = 0; j < 10; j++){
+  for (int i = v; i > 1; i--){
+    for (int j = 0; j < 10; j++){
       board[i][j] = board[i-1][j];
       if (board[i][j] != -1){
         oled.rectangle(ini.h+j*pixel, ini.v+i*pixel, pixel-1, pixel-1, OLED_SOLID, board[i][j] & dark);
@@ -201,22 +198,20 @@ void erase_board_line(int v){
   }
   
   
-  for (j = 0; j < 10; j++)
+  for (int j = 0; j < 10; j++)
     board[0][j] = -1; 
   
   oled.rectangle(ini.h, ini.v, pixel*10-1, pixel-1, OLED_SOLID, oled.RGB(0,0,0));
 }
 
 void test_and_erase(){
-  int i;
-  int j;
   int borrar;
   
-  for (i = 19; i > 0; i--){
+  for (int i = 19; i > 0; i--){
     borrar = 1;
     
     while (borrar == 1){
-      for (j = 0; borrar == 1 && j < 10; j++)
+      for (int j = 0; borrar == 1 && j < 10; j++)
         if (board[i][j] == -1) borrar = 0;
       
       if (borrar == 1) {
@@ -229,13 +224,13 @@ void test_and_erase(){
 }
 
 int can_put(int v, int h, int fig, int rot){
-  int i;
-  for (i = 0; i < 4; i++)
+  for (int i = 0; i < 4; i++)
     if (board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] != -1) return 0;
     
   return 1;
 }
 
+// Pick a new color for the next figure
 void change_color(){
   color = figure_colors[random(N_FIG_COLORS)];
 }
@@ -253,8 +248,8 @@ int show_game_over_and_wait(){
   oled.drawstringblock(88, 75, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "OVER");
   oled.drawstringblock(88, 95, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, debug);
   
-  for (i = 0; i < 20; i++)
-    for (j = 0; j < 10; j++)
+  for (int i = 0; i < 20; i++)
+    for (int j = 0; j < 10; j++)
       board[i][j] = -1;
   
   while (digitalRead(PushButton) == HIGH);
