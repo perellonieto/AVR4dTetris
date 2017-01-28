@@ -37,8 +37,8 @@ ISR(TIMER1_OVF_vect) {
 
 void(* reset) (void) = 0;
 
-
-int tam_fig_h(int fig, int rot){
+// Figure width with the given rotation
+int fig_width(int fig, int rot){
   switch(fig){
     case 0:
       return 2;
@@ -58,7 +58,8 @@ int tam_fig_h(int fig, int rot){
   return -1;
 }
 
-int tam_fig_v(int fig, int rot){
+// Figure height with the given rotation
+int fig_height(int fig, int rot){
   switch(fig){
     case 0:
       return 2;
@@ -168,7 +169,7 @@ int show_game(){
 }
 
 int limit(int v, int h, int fig, int rot){
-  if (v > 20-tam_fig_v(fig,rot))
+  if (v > 20-fig_height(fig,rot))
     return 1;
   
   for (int i = 0; i < 4; i++)
@@ -308,7 +309,7 @@ void loop(){
   /* ================================ *
    * Calculando color para mostrar    *
    * ================================ */
-  //if (pos.v > 20-tam_fig_v(fig))
+  //if (pos.v > 20-fig_height(fig))
   if (limit(pos.v, pos.h, fig, rot) == 1){
     write_board_figure(ant.v, ant.h, fig, rot, color);
     
@@ -345,7 +346,7 @@ void loop(){
      if ((second - wait) > 10){
       if (digitalRead(UpButton) == LOW || digitalRead(PushButton) == LOW){ 
         aux = (rot+1)%4;
-        if (pos.h < 11-tam_fig_h(fig, aux) && can_put(pos.v, pos.h, fig, aux) == 1){
+        if (pos.h < 11-fig_width(fig, aux) && can_put(pos.v, pos.h, fig, aux) == 1){
           rot = aux;
           paint = 1;
           wait = second;
@@ -365,7 +366,7 @@ void loop(){
         }
       }
       if (digitalRead(RightButton) == LOW) { 
-        if (pos.h < 10-tam_fig_h(fig, rot) && can_put(pos.v, pos.h+1, fig, rot) == 1){
+        if (pos.h < 10-fig_width(fig, rot) && can_put(pos.v, pos.h+1, fig, rot) == 1){
           pos.h++;
           paint = 1;
           wait = second;
