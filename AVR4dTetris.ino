@@ -148,7 +148,10 @@ int show_game(){
   ini.h = 20;
   ini.v = 2;
   
-  fig = random(5)+1;
+  fig = random(N_FIG);
+  // FIXME The previous random is always Zero
+  fig = random(N_FIG);
+  rot = random(N_ROT);
   pos.v = 0;
   pos.h = 3;
   time = 500;
@@ -299,8 +302,8 @@ void setup(){
   setup_joystick();
   setup_timer();
   
-  show_intro();
-  show_menu_and_wait();
+  //show_intro();
+  //show_menu_and_wait();
   
   show_game();
 }
@@ -317,8 +320,8 @@ void loop(){
     
     change_color();
 
-    fig = random(7);
-    rot = random(4);
+    fig = random(N_FIG);
+    rot = random(N_ROT);
     pos.v = 0;
     pos.h = 3;
     time = 500;

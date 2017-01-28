@@ -32,7 +32,9 @@ int paint;
 int lines;
 int wait;
 position p;
-position scheme[7][4][4] = {
+const unsigned int N_FIG = 7;
+const unsigned int N_ROT = 4;
+position scheme[N_FIG][N_ROT][4] = {
                             // ##                         ##                          ##                          ##
                             // ##                         ##                          ##                          ##
                             {{{0,0},{0,1},{1,0},{1,1}} , {{0,0},{0,1},{1,0},{1,1}} , {{0,0},{0,1},{1,0},{1,1}} , {{0,0},{0,1},{1,0},{1,1}}},
