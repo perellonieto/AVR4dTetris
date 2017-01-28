@@ -37,7 +37,7 @@ const int LeftButton = 3;     // the number of the pushbutton pin
 const int RightButton =  4;      // the number of the LED pin
 const int PushButton = 5;     // the number of the pushbutton pin
 const int CONTRAST = 2;    // 0 - 15
-const unsigned int dark = 0x7BEF; // binary R = 01111 G = 011111 B = 01111
+const unsigned int dark = 0x7BEF; // binary R = 01111 G = 01111 B = 01111
 
 const int pixel = 6;
 
@@ -98,8 +98,7 @@ position ant;
 position ini;
 unsigned int color;
 
-ISR(TIMER1_OVF_vect) 
-{
+ISR(TIMER1_OVF_vect) {
   //TCNT1=0x0BDC;
   TCNT1=0xFBDC;
   second++;
@@ -108,10 +107,8 @@ ISR(TIMER1_OVF_vect)
 void(* reset) (void) = 0;
 
 
-int tam_fig_h(int fig, int rot)
-{
-  switch(fig)
-  {
+int tam_fig_h(int fig, int rot){
+  switch(fig){
     case 0:
       return 2;
     case 1:
@@ -130,10 +127,8 @@ int tam_fig_h(int fig, int rot)
   return -1;
 }
 
-int tam_fig_v(int fig, int rot)
-{
-  switch(fig)
-  {
+int tam_fig_v(int fig, int rot){
+  switch(fig){
     case 0:
       return 2;
     case 1:
@@ -152,9 +147,7 @@ int tam_fig_v(int fig, int rot)
   return -1;
 }
 
-void paint_points()
-{
-  
+void paint_points(){
         debug[0] = '0'+lines/1000;
         debug[1] = '0'+(lines%1000)/100;
         debug[2] = '0'+((lines%1000)%100)/10;
@@ -167,33 +160,27 @@ void paint_points()
         oled.drawstringblock(95, 65, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, debug);
 }
 
-int paint_figure(int v, int h, int figure, int rot, unsigned int color)
-{
+int paint_figure(int v, int h, int figure, int rot, unsigned int color){
   h = ini.h+(h*pixel);
   v = ini.v+(v*pixel);
   
-  for (i = 0; i < 4; i++)
-  {
+  for (i = 0; i < 4; i++){
      oled.rectangle(h+scheme[figure][rot][i].h*pixel, v+scheme[figure][rot][i].v*pixel, pixel-1, pixel-1, OLED_SOLID, color & dark);
      oled.rectangle(h+scheme[figure][rot][i].h*pixel+1, v+scheme[figure][rot][i].v*pixel+1, pixel-3, pixel-3, OLED_SOLID, color);
   }
 }
 
-int erase_figure(int v, int h, int figure, int rot)
-{
+int erase_figure(int v, int h, int figure, int rot){
   h = ini.h+h*pixel;
   v = ini.v+v*pixel;
   unsigned int color_erase = oled.RGB(0,0,0);
   
   for (i = 0; i < 4; i++)
-  {
      oled.rectangle(h+scheme[figure][rot][i].h*pixel, v+scheme[figure][rot][i].v*pixel, pixel-1, pixel-1, OLED_SOLID, color_erase);
-  }
 }
 
-void show_menu()
-{
-  oled.setfont(OLED_FONT5x7);
+int show_intro(){
+   oled.setfont(OLED_FONT5x7);
   oled.setfontmode(OLED_FONT_TRANSPARENT);
   
   /* Barrido de pantalla inicial */
@@ -207,143 +194,24 @@ void show_menu()
   oled.drawstringblock(5, 40, 0, oled.RGB(0, 255, 0), 1, 3, "Miquel Perello Nieto");
   oled.drawstringblock(5, 100, 0, oled.RGB(255, 0, 255), 1, 1, "www.perellonieto.com");
   delay(2000); 
-  oled.Clear(); 
-  
-  
+  oled.Clear();
+  return 1;
+}
+
+int show_menu_and_wait(){
   oled.rectangle(30, (3*45)+5, 100, 30, OLED_SOLID, oled.RGB(100, 255, 100));
   oled.drawstringblock(35, 25, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "TETRIS");
   oled.drawstringblock(60, 105, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "Start");
   
-  while (digitalRead(PushButton) == HIGH)
-  {
+  while (digitalRead(PushButton) == HIGH)  }{
     if (second%30 < 15) oled.drawstringblock(60, 105, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "Start");
     else oled.drawstringblock(60, 105, OLED_FONT_OPAQUE, oled.RGB(0, 0, 0), 1, 1, "Start");
   }
-
-  //delay(250);
   oled.Clear();
- 
-}
-
-int limit(int v, int h, int fig, int rot)
-{
-  if (v > 20-tam_fig_v(fig,rot))
-    return 1;
-  
-  for (i = 0; i < 4; i++)
-  {
-    if (board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] != -1) return 1;
-  }
-  
-  return 0;
-}
-
-void write_board_figure(int v, int h, int fig, int rot, unsigned int color)
-{
-  
-  for (i = 0; i < 4; i++)
-  {
-    board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] = color;
-  }
-  
-}
-
-void erase_board_line(int v)
-{
-  int i;
-  int j;
-  
-  oled.rectangle(ini.h, ini.v+v*pixel, pixel*10-1, pixel-1, OLED_SOLID, oled.RGB(0,0,0));
-  
-  for (i = v; i > 1; i--)
-  {
-    for (j = 0; j < 10; j++)
-    {
-      board[i][j] = board[i-1][j];
-      if (board[i][j] != -1)
-      {
-        oled.rectangle(ini.h+j*pixel, ini.v+i*pixel, pixel-1, pixel-1, OLED_SOLID, board[i][j] & dark);
-        oled.rectangle(ini.h+j*pixel+1, ini.v+i*pixel+1, pixel-3, pixel-3, OLED_SOLID, board[i][j]);
-      }
-      else
-        oled.rectangle(ini.h+j*pixel, ini.v+i*pixel, pixel-1, pixel-1, OLED_SOLID, oled.RGB(0,0,0));
-    }
-  }
-  
-  
-  for (j = 0; j < 10; j++)
-  {
-    board[0][j] = -1; 
-  }
-  
-  oled.rectangle(ini.h, ini.v, pixel*10-1, pixel-1, OLED_SOLID, oled.RGB(0,0,0));
-}
-
-void test_and_erase()
-{
-  int i;
-  int j;
-  int borrar;
-  
-  for (i = 19; i > 0; i--)
-  {
-    borrar = 1;
-    
-    while (borrar == 1)
-    {
-      for (j = 0; borrar == 1 && j < 10; j++)
-      {
-        if (board[i][j] == -1) borrar = 0;
-      }
-      
-      if (borrar == 1) 
-      {
-        erase_board_line(i);
-        lines++;
-        paint_points();
-      }
-    }
-  }
-}
-
-int can_put(int v, int h, int fig, int rot)
-{
-  int i;
-  for (i = 0; i < 4; i++)
-  {
-    if (board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] != -1) return 0;
-  }
   return 1;
 }
 
-void setup()
-{
-  Serial.begin(57600);  
-  oled.Init();
-  oled.SetContrast(CONTRAST);
-  oled.Clear();
-  
-  randomSeed(analogRead(0));
-  
-  /* Joistick */
-  pinMode(UpButton, INPUT);
-  digitalWrite(UpButton, HIGH);
-  pinMode(DownButton, INPUT);
-  digitalWrite(DownButton, HIGH);
-  pinMode(LeftButton, INPUT);
-  digitalWrite(LeftButton, HIGH);
-  pinMode(RightButton, INPUT);
-  digitalWrite(RightButton, HIGH);
-  pinMode(PushButton, INPUT);
-  digitalWrite(PushButton, HIGH);
-  
-  TIMSK1=0x01;    // enabled global and timer overflow interrupt;
-  TCCR1A = 0x00;  // normal operation page 148 (mode0);
-  TCNT1=0x0BDC;   // 16bit counter register
-  TCCR1B = 0x04;  // start timer/ set clock
-  
-  show_menu();
-  
+int show_game(){
   lines = 0;
   ini.h = 20;
   ini.v = 2;
@@ -355,27 +223,90 @@ void setup()
   wait = 0;
   
   change_color();
-
+  
    for (i = 0; i < 20; i++)
-   {
     for (j = 0; j < 10; j++)
-    {
       board[i][j] = -1;
-      //oled.rectangle(ini.h+j*pixel, ini.v+i*pixel, pixel-1, pixel-1, OLED_WIREFRAME, oled.RGB(100,100,100));
-    }
-   }
- 
+   
   oled.SetBackground(oled.RGB(200, 100, 100));
   oled.rectangle(ini.h-1, ini.v-1, pixel*10+1, pixel*20+1, OLED_SOLID, oled.RGB(0,0,0));
   oled.rectangle(ini.h-1, ini.v-1, pixel*10+1, pixel*20+1, OLED_WIREFRAME, oled.RGB(255,255,255));
   paint_points();
   oled.drawstringblock(90, 25, OLED_FONT_OPAQUE, oled.RGB(255, 255, 150), 1, 2, "TETRIS");
+  return 1; 
 }
 
-void change_color()
-{
-     switch (random(6))
-    {
+int limit(int v, int h, int fig, int rot){
+  if (v > 20-tam_fig_v(fig,rot))
+    return 1;
+  
+  for (i = 0; i < 4; i++)
+    if (board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] != -1) return 1;
+  
+  return 0;
+}
+
+void write_board_figure(int v, int h, int fig, int rot, unsigned int color){  
+  for (i = 0; i < 4; i++)
+    board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] = color;
+}
+
+void erase_board_line(int v){
+  int i;
+  int j;
+  
+  oled.rectangle(ini.h, ini.v+v*pixel, pixel*10-1, pixel-1, OLED_SOLID, oled.RGB(0,0,0));
+  
+  for (i = v; i > 1; i--){
+    for (j = 0; j < 10; j++){
+      board[i][j] = board[i-1][j];
+      if (board[i][j] != -1){
+        oled.rectangle(ini.h+j*pixel, ini.v+i*pixel, pixel-1, pixel-1, OLED_SOLID, board[i][j] & dark);
+        oled.rectangle(ini.h+j*pixel+1, ini.v+i*pixel+1, pixel-3, pixel-3, OLED_SOLID, board[i][j]);
+      }
+      else
+        oled.rectangle(ini.h+j*pixel, ini.v+i*pixel, pixel-1, pixel-1, OLED_SOLID, oled.RGB(0,0,0));
+    }
+  }
+  
+  
+  for (j = 0; j < 10; j++)
+    board[0][j] = -1; 
+  
+  oled.rectangle(ini.h, ini.v, pixel*10-1, pixel-1, OLED_SOLID, oled.RGB(0,0,0));
+}
+
+void test_and_erase(){
+  int i;
+  int j;
+  int borrar;
+  
+  for (i = 19; i > 0; i--){
+    borrar = 1;
+    
+    while (borrar == 1){
+      for (j = 0; borrar == 1 && j < 10; j++)
+        if (board[i][j] == -1) borrar = 0;
+      
+      if (borrar == 1) {
+        erase_board_line(i);
+        lines++;
+        paint_points();
+      }
+    }
+  }
+}
+
+int can_put(int v, int h, int fig, int rot){
+  int i;
+  for (i = 0; i < 4; i++)
+    if (board[v+scheme[fig][rot][i].v][h+scheme[fig][rot][i].h] != -1) return 0;
+    
+  return 1;
+}
+
+void change_color(){
+     switch (random(6)){
       case 0:
         color = oled.RGB(255,0,0);
         break;
@@ -397,47 +328,81 @@ void change_color()
     } 
 }
 
-void game_over()
-{
-        debug[0] = '0'+lines/1000;
-        debug[1] = '0'+(lines%1000)/100;
-        debug[2] = '0'+((lines%1000)%100)/10;
-        debug[3] = '0'+((lines%1000)%100)%10;
-        debug[4] = '\0';
-        
-        oled.rectangle(84, 50, 70, 62, OLED_SOLID, oled.RGB(0, 0, 0));
-        oled.rectangle(84, 50, 70, 62, OLED_WIREFRAME, oled.RGB(255, 0, 0));
-        oled.drawstringblock(88, 55, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "GAME");
-        oled.drawstringblock(88, 75, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "OVER");
-        oled.drawstringblock(88, 95, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, debug);
-        
-       for (i = 0; i < 20; i++)
-       {
-        for (j = 0; j < 10; j++)
-        {
-          board[i][j] = -1;
-        }
-       }
-        
-        while (digitalRead(PushButton) == HIGH);
-        
-        lines = 0;
-        oled.rectangle(84, 50, 70, 62, OLED_SOLID, oled.RGB(200, 100, 100));
-        oled.rectangle(ini.h-1, ini.v-1, pixel*10+1, pixel*20+1, OLED_SOLID, oled.RGB(0,0,0));
-        oled.rectangle(ini.h-1, ini.v-1, pixel*10+1, pixel*20+1, OLED_WIREFRAME, oled.RGB(255,255,255));
-        paint_points();
-        oled.drawstringblock(90, 25, OLED_FONT_OPAQUE, oled.RGB(255, 255, 150), 1, 2, "TETRIS");
-        
-}
-void loop()
-{
+int show_game_over_and_wait(){
+  debug[0] = '0'+lines/1000;
+  debug[1] = '0'+(lines%1000)/100;
+  debug[2] = '0'+((lines%1000)%100)/10;
+  debug[3] = '0'+((lines%1000)%100)%10;
+  debug[4] = '\0';
   
+  oled.rectangle(84, 50, 70, 62, OLED_SOLID, oled.RGB(0, 0, 0));
+  oled.rectangle(84, 50, 70, 62, OLED_WIREFRAME, oled.RGB(255, 0, 0));
+  oled.drawstringblock(88, 55, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "GAME");
+  oled.drawstringblock(88, 75, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "OVER");
+  oled.drawstringblock(88, 95, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, debug);
+  
+  for (i = 0; i < 20; i++)
+    for (j = 0; j < 10; j++)
+      board[i][j] = -1;
+  
+  while (digitalRead(PushButton) == HIGH);
+  
+  lines = 0;
+  oled.rectangle(84, 50, 70, 62, OLED_SOLID, oled.RGB(200, 100, 100));
+  oled.rectangle(ini.h-1, ini.v-1, pixel*10+1, pixel*20+1, OLED_SOLID, oled.RGB(0,0,0));
+  oled.rectangle(ini.h-1, ini.v-1, pixel*10+1, pixel*20+1, OLED_WIREFRAME, oled.RGB(255,255,255));
+  paint_points();
+  oled.drawstringblock(90, 25, OLED_FONT_OPAQUE, oled.RGB(255, 255, 150), 1, 2, "TETRIS");
+  return 1;
+}
+
+int setup_joystick(){
+  /* Joistick */
+  pinMode(UpButton, INPUT);
+  digitalWrite(UpButton, HIGH);
+  pinMode(DownButton, INPUT);
+  digitalWrite(DownButton, HIGH);
+  pinMode(LeftButton, INPUT);
+  digitalWrite(LeftButton, HIGH);
+  pinMode(RightButton, INPUT);
+  digitalWrite(RightButton, HIGH);
+  pinMode(PushButton, INPUT);
+  digitalWrite(PushButton, HIGH);
+  
+  return 1;
+}
+
+int setup_timer(){
+  TIMSK1=0x01;    // enabled global and timer overflow interrupt;
+  TCCR1A = 0x00;  // normal operation page 148 (mode0);
+  TCNT1=0x0BDC;   // 16bit counter register
+  TCCR1B = 0x04;  // start timer/ set clock
+  return 1;
+}
+
+void setup(){
+  Serial.begin(57600);  
+  oled.Init();
+  oled.SetContrast(CONTRAST);
+  oled.Clear();
+  
+  randomSeed(analogRead(0));
+  
+  setup_joystick();
+  setup_timer();
+  
+  show_intro();
+  show_menu_and_wait();
+  
+  show_game();
+}
+
+void loop(){
   /* ================================ *
    * Calculando color para mostrar    *
    * ================================ */
   //if (pos.v > 20-tam_fig_v(fig))
-  if (limit(pos.v, pos.h, fig, rot) == 1)
-  {
+  if (limit(pos.v, pos.h, fig, rot) == 1){
     write_board_figure(ant.v, ant.h, fig, rot, color);
     
     test_and_erase();
@@ -451,13 +416,12 @@ void loop()
     time = 500;
     wait = second;
     
-    if (limit(pos.v, pos.h, fig, rot) == 1)
-    {
-      game_over();
+    if (limit(pos.v, pos.h, fig, rot) == 1){
+      show_game_over_and_wait();
+      show_game();
     }
   }
-  else
-  {
+  else{
     if (paint == 1) erase_figure(ant.v, ant.h, fig, ant_rot);
   }
   
@@ -465,45 +429,36 @@ void loop()
     ant.v = pos.v;
     ant_rot = rot;
   
-  if (paint == 1) 
-  {
+  if (paint == 1) {
     paint_figure(pos.v, pos.h, fig, rot, color);
     paint = 0;
   }
   
-     /* Llegint el joistick */
-     if ((second - wait) > 10)
-     {
-      if (digitalRead(UpButton) == LOW || digitalRead(PushButton) == LOW)
-      { 
+     /* Read joystick */
+     if ((second - wait) > 10){
+      if (digitalRead(UpButton) == LOW || digitalRead(PushButton) == LOW){ 
         aux = (rot+1)%4;
-        if (pos.h < 11-tam_fig_h(fig, aux) && can_put(pos.v, pos.h, fig, aux) == 1)
-        {
+        if (pos.h < 11-tam_fig_h(fig, aux) && can_put(pos.v, pos.h, fig, aux) == 1){
           rot = aux;
           paint = 1;
           wait = second;
         }
       }
-      if (digitalRead(DownButton) == LOW) 
-      { 
+      if (digitalRead(DownButton) == LOW) { 
         //pos.v++;
         //paint = 1;
         wait = second;
         second += 15;
       }
-      if (digitalRead(LeftButton) == LOW) 
-      { 
-        if (pos.h > 0 && can_put(pos.v, pos.h-1, fig, rot) == 1) 
-        {
+      if (digitalRead(LeftButton) == LOW) { 
+        if (pos.h > 0 && can_put(pos.v, pos.h-1, fig, rot) == 1) {
           pos.h--;
           paint = 1;
           wait = second;
         }
       }
-      if (digitalRead(RightButton) == LOW) 
-      { 
-        if (pos.h < 10-tam_fig_h(fig, rot) && can_put(pos.v, pos.h+1, fig, rot) == 1)
-        {
+      if (digitalRead(RightButton) == LOW) { 
+        if (pos.h < 10-tam_fig_h(fig, rot) && can_put(pos.v, pos.h+1, fig, rot) == 1){
           pos.h++;
           paint = 1;
           wait = second;
@@ -511,11 +466,9 @@ void loop()
       }
     }
     
-  if (second - ant_seconds > 50-lines/10)
-  {
+  if (second - ant_seconds > 50-lines/10){
     ant_seconds = second;
     pos.v++;
     paint = 1;
   }
-  
 }
