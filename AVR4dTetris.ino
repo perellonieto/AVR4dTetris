@@ -26,7 +26,8 @@
 	THE SOFTWARE.
 
  *************************************************/
-#include "displayshield4d.h" 
+#include "displayshield4d.h"
+#include "AVR4dTetris.h"
  
 DisplayShield4d  oled;
 
@@ -203,7 +204,7 @@ int show_menu_and_wait(){
   oled.drawstringblock(35, 25, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 2, 2, "TETRIS");
   oled.drawstringblock(60, 105, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "Start");
   
-  while (digitalRead(PushButton) == HIGH)  }{
+  while (digitalRead(PushButton) == HIGH){
     if (second%30 < 15) oled.drawstringblock(60, 105, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "Start");
     else oled.drawstringblock(60, 105, OLED_FONT_OPAQUE, oled.RGB(0, 0, 0), 1, 1, "Start");
   }
