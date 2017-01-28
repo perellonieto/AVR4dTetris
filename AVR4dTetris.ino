@@ -3,12 +3,13 @@
         4Display Shield Tetris
         Code: Miquel Perello Nieto
         
-        Adaptation of the code:
+        This code is an adaptation of the example made by Oscar Gonzalez:
         
         4Display Shield Library Example
         Code: Oscar Gonzalez December 2010
         www.BricoGeek.com
   
+        Copyright(c) January 2017 Miquel Perello Nieto - www.perellonieto.com
 	Copyright(c) December 2010 Oscar Gonzalez - www.BricoGeek.com
 
 	http://code.google.com/p/displayshield4d/
@@ -162,7 +163,7 @@ void paint_points()
         
         oled.rectangle(90, 50, 60, 25, OLED_SOLID, oled.RGB(100, 100, 100));
         oled.rectangle(90, 50, 60, 25, OLED_WIREFRAME, oled.RGB(200, 200, 200));
-        oled.drawstringblock(95, 55, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "lineas");
+        oled.drawstringblock(95, 55, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "score");
         oled.drawstringblock(95, 65, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, debug);
 }
 
@@ -192,21 +193,14 @@ int erase_figure(int v, int h, int figure, int rot)
 
 void show_menu()
 {
-  
   oled.setfont(OLED_FONT5x7);
   oled.setfontmode(OLED_FONT_TRANSPARENT);
   
   /* Barrido de pantalla inicial */
   for (i=0 ; i<128 ; i++) { oled.line(0, i, 159, i, oled.RGB(255-i*2, 0, 127+i)); }
-  //delay(100);
   for (i=0 ; i<128 ; i++) { oled.line(0, 127-i, 159, 127-i, oled.RGB(i*2, 255-i*2, 127+i)); }
-  //delay(100);
   for (i=0 ; i<160 ; i++) { oled.line(159-i, 0, 159-i, 127, oled.RGB(255-i, i, 0)); }
-  //delay(100);
   for (i=0 ; i<160 ; i++) { oled.line(i, 0, i, 127, oled.RGB(0, 255-i, 255-i)); }
-  //delay(100);
-  //for (i=0 ; i<255 ; i++) { oled.circle(80, 64, i/3, OLED_WIREFRAME, oled.RGB(i, i, i)); }
-  //for (i=0 ; i<255 ; i++) { oled.circle(80, 64, (255-i)/2, OLED_SOLID, oled.RGB(i, i, 0)); }
   oled.Clear();
   
   oled.drawstringblock(5, 5, 0, oled.RGB(255, 255, 255), 2, 2, "Arduino 2560");
@@ -297,12 +291,6 @@ void test_and_erase()
     
     while (borrar == 1)
     {
-      /* DEBUG
-      oled.rectangle(ini.h-6, ini.v+pixel*i, pixel-1, pixel-1, OLED_SOLID, oled.RGB(i*10,0,i*10));
-      while (digitalRead(PushButton) != LOW);
-      delay(50);
-      END DEBUG*/
-      
       for (j = 0; borrar == 1 && j < 10; j++)
       {
         if (board[i][j] == -1) borrar = 0;
@@ -310,29 +298,12 @@ void test_and_erase()
       
       if (borrar == 1) 
       {
-        
-        /*DEBUG
-              debug[0] = '0'+i/10;
-              debug[1] = '0'+i%10;
-              debug[1] = '\0';
-              
-              oled.rectangle(90, 80, 60, 25, OLED_SOLID, oled.RGB(100, 100, 100));
-              oled.rectangle(90, 80, 60, 25, OLED_WIREFRAME, oled.RGB(200, 200, 200));
-              oled.drawstringblock(95, 85, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, "delete");
-              oled.drawstringblock(95, 95, OLED_FONT_OPAQUE, oled.RGB(255, 255, 255), 1, 1, debug);
-        END DEBUG*/
-        
         erase_board_line(i);
         lines++;
         paint_points();
       }
     }
   }
-      /* DEBUG
-      while (digitalRead(PushButton) != LOW);
-      delay(50);
-      oled.rectangle(ini.h-6, ini.v+pixel*i, pixel-1, pixel*20, OLED_SOLID, oled.RGB(200, 100, 100));
-      END DEBUG */
 }
 
 int can_put(int v, int h, int fig, int rot)
@@ -443,25 +414,7 @@ void game_over()
        for (i = 0; i < 20; i++)
        {
         for (j = 0; j < 10; j++)
-        {//	Serial.write(OLED_STRING_BLOCK);
-//
-//	Serial.write(x);
-//	Serial.write(y);
-//	Serial.write(font);
-//
-//	// Color
-//	Serial.write(color >> 8);		// MSB			
-//	Serial.write(color & 0xFF);		// LSB
-//
-//	Serial.write(width);
-//	Serial.write(height);
-//
-//	for (int i=0 ; i<strlen(text) ; i++)
-//	{
-//		Serial.write(text[i]);
-//	}
-//
-//	Serial.write(OLED_STRINGTERMINATOR, 1); // String terminator
+        {
           board[i][j] = -1;
         }
        }

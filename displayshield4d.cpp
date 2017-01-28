@@ -1,5 +1,6 @@
 /*
 	displayshield4d.h - Arduino Library for 4Display-Shield by 4d Systems
+        Copyright(c) January 2017 Miquel Perello Nieto - www.perellonieto.com
 	Copyright(c) December 2010 Oscar Gonzalez - www.BricoGeek.com
 
 	http://code.google.com/p/displayshield4d/
