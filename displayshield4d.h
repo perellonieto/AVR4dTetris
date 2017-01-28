@@ -21,10 +21,8 @@
 
 	#include <inttypes.h>
 
-	#define OLED_RESETPIN			7
-
 	#define OLED_BAUDRATE			9600
-	#define OLED_RESETPIN			8  
+	#define OLED_RESETPIN			7  
 	#define OLED_INITDELAYMS		1000
 
 	#define	OLED_DETECT_BAUDRATE		0x55
@@ -71,6 +69,15 @@
 		#define	OLED_FONT_OPAQUE	0x01
 
 	#define OLED_STRING_BLOCK		0x53
+	#define OLED_TEXT_BUTTON		0x62
+		#define OLED_TEXT_BUTTON_DOWN	0x00
+		#define OLED_TEXT_BUTTON_UP	0x01
+	#define OLED_ASCII_CHAR			0x74
+
+	// SD Card functions
+	#define OLED_SD_COMMAND			0x40
+		#define OLED_INIT_SD		0x69
+		#define OLED_SD_SET_PTR		0x41
 
 	// Class definition
 	class DisplayShield4d 
@@ -109,6 +116,12 @@
 			uint8_t setfont(uint8_t font_type);
 			uint8_t setfontmode(uint8_t font_mode);
 			uint8_t drawstringblock(uint8_t x, uint8_t y, uint8_t font, unsigned int color, uint8_t width, uint8_t height, char *text);
+			uint8_t drawtextbutton(uint8_t state, uint8_t x, uint8_t y, unsigned int buttoncolor, uint8_t font, unsigned int stringColor, uint8_t width, uint8_t height, char *text);
+			uint8_t drawasciichar(uint8_t strChar, uint8_t x, uint8_t y, unsigned int color, uint8_t width, uint8_t height);
+
+			// SD Card function
+			uint8_t init_sd();
+			uint8_t set_address_pointer(long addr);
 
 
 		private:
